@@ -7,15 +7,16 @@ MODULE_AUTHOR("Aiden");                       // Auteur du module.
 MODULE_LICENSE("GPL");                        // Licence du module (GPL : GNU General Public License).
 
 // Fonction appelée lors du chargement du module dans le noyau.
-static int Message_init(void) {
-	printk("Hello world!\n");
+static int __init Message_init(void) {
+	printk(KERN_INFO "Hello world!\n");
 	return 0;
 }
 
 // Fonction appelée lors du déchargement du module du noyau.
-static void Message_exit(void) {
-	printk("Goodbye world\n");
+static void __exit Message_exit(void) {
+	printk(KERN_INFO "Goodbye world\n");
 }
 
 module_init(Message_init);  // Spécifie la fonction d'entrée du module.
 module_exit(Message_exit);  // Spécifie la fonction de sortie du module.
+
