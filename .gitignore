@@ -1,0 +1,51 @@
+Ignorer les fichiers de compilation des modules kernel
+
+Fichiers objets
+
+*.o
+
+Fichiers de métadonnées
+
+*.mod.c
+*.mod.o
+*.mod
+*.ko
+
+Fichiers générés pour la construction
+
+Module.symvers
+modules.order
+
+Fichiers temporaires
+
+*.tmp
+*.cmd
+*.d
+
+Dossiers spécifiques de construction
+
+*.so
+*.gcno
+*.gcda
+*.gcov
+
+Logs et fichiers de sortie
+
+*.log
+.log.
+
+Fichiers de sauvegarde temporaires
+
+*~
+*.swp
+*.bak
+
+Ignore les répertoires de build
+
+build/
+
+Fichiers spécifiques à l'éditeur
+
+.vscode/
+.idea/
+*.code-workspace
