@@ -18,7 +18,7 @@ sudo apt install linux-headers-$(uname -r)
 ### Pour Arch :
 ```bash
 sudo pacman -S --needed base-devel
-sudo pacman -S linux-headers
+sudo pacman -S linux$(uname -r | cut -d '.' -f 1,2 | tr -d .)-headers
 ```
 
 ### Vérification :
