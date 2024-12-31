@@ -13,10 +13,9 @@
 #define SYS_NAME_INFO "usb_info"
 #define SYS_NAME_CONNECTED "is_connected"
 #define MAX_DEVICES 10
-#define FILE_DEVICE 0
-#define FILE_CONNECT 1
+#define MAX_INFO_NAME 128
 
-MODULE_DESCRIPTION("USB monitor V 0.1 - 31/12/2024");
+MODULE_DESCRIPTION("USB monitor V 0.2 - 31/12/2024");
 MODULE_AUTHOR("Aiden");
 MODULE_LICENSE("GPL");
 
@@ -24,6 +23,9 @@ struct usb_info {
 	int devnum;
 	int vendorID;
 	int productID;
+	char vendor_name[MAX_INFO_NAME];
+	char product_name[MAX_INFO_NAME];
+	int usb_version;
 	struct list_head next;
 };
 
@@ -46,6 +48,18 @@ static int usb_device_add(struct usb_device *dev) {
 	node->devnum = dev->devnum;
 	node->vendorID = dev->descriptor.idVendor;
 	node->productID = dev->descriptor.idProduct;
+	node->usb_version = dev->descriptor.bcdUSB;
+
+    int ret = usb_string(dev, dev->descriptor.iManufacturer, node->vendor_name, sizeof(node->vendor_name));
+    if (ret < 0) {
+        snprintf(node->vendor_name, sizeof(node->vendor_name), "Inconnu");
+	}
+
+    ret = usb_string(dev, dev->descriptor.iProduct, node->product_name, sizeof(node->product_name));
+    if (ret < 0) {
+		snprintf(node->product_name, sizeof(node->product_name), "Inconnu");
+	}
+
 	INIT_LIST_HEAD(&node->next); // Initialisation du pointeur
 	list_add_tail(&node->next, &devices); // Ajout à la fin de la liste
 	return 0;
@@ -91,9 +105,13 @@ static ssize_t info_show(struct kobject *kobj, struct kobj_attribute *attr, char
 	len += scnprintf(buf + len, PAGE_SIZE - len, "USB Monitor actif\n");
 
 	list_for_each_entry(entry, &devices, next) {
-    		len += scnprintf(buf + len, PAGE_SIZE - len,
-        		"\nPériphérique : Vendor ID = %04X ; Product ID = %04X\n",
-        		entry->vendorID, entry->productID);
+        len += scnprintf(buf + len, PAGE_SIZE - len,
+            "\nPériphérique %d :\n"
+			"  [ ] Vendor  : ID = %04X - Name = %s\n"
+			"  [ ] Product : ID = %04X - Name = %s\n"
+            "  [ ] Version USB : %04X\n",
+            entry->devnum, entry->vendorID, entry->vendor_name,
+            entry->productID, entry->product_name, entry->usb_version);
 	}
 	mutex_unlock(&data_protected);
 	return len;
@@ -114,7 +132,7 @@ static int usb_event(struct notifier_block *self, unsigned long action, void* da
 		printk(KERN_ERR "usb_monitor : Données USB non valides.\n");
 		return NOTIFY_BAD;
 	}
-	struct usb_device *dev = interface_to_usbdev(data);
+	struct usb_device *dev = (struct usb_device *)data;
 
 	if (action == USB_DEVICE_ADD) {
 		mutex_lock(&data_protected);
