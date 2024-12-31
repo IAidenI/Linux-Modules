@@ -1,1 +1,0 @@
-savedcmd_/home/aiden/Documents/C_Projects/Linux-Modules/bin/USBMonitor/Module.symvers :=  scripts/mod/modpost -M  -a    -N  -o /home/aiden/Documents/C_Projects/Linux-Modules/bin/USBMonitor/Module.symvers -n -T /home/aiden/Documents/C_Projects/Linux-Modules/bin/USBMonitor/modules.order -i Module.symvers -e 
