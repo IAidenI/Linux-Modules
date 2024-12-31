@@ -1,4 +1,4 @@
-obj-m=usb.o
+obj-m=usb_monitor.o
 KDIR=/lib/modules/`uname -r`/build
 
 kbuild:
